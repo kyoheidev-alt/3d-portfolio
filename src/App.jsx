@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
 import {
   About,
@@ -15,25 +15,31 @@ import {
 } from "./components";
 
 const App = () => {
+   // マウスの位置を管理する状態
+   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+   // マウスの位置を更新する関数
+   const updateMousePosition = ev => {
+     setMousePosition({ x: ev.clientX, y: ev.clientY });
+   };
+    // コンポーネントがマウントされたときにイベントリスナーを追加し、アンマウントされたときに削除
+  useEffect(() => {
+    window.addEventListener("mousemove", updateMousePosition);
+
+    return () => {
+      window.removeEventListener("mousemove", updateMousePosition);
+    };
+  }, []);
   return (
     <BrowserRouter>
       <div className="relative z-0 bg-primary">
-        <RippleCanvas />
-        <BackgroundCanvas />
         <div className="bg-cover bg-no-repeat bg-center">
           <Navbar />
+          <BackgroundCanvas />     
+         <RippleCanvas mousePosition={mousePosition} />
           <Hero />
         </div>
-        <About />
-        <Experience />
-        <Tech />
-        <Works />
-        <Feedbacks />
-        <div className="relative z-0">
-          <Contact />
-          <StarsCanvas />
-        </div>
-      </div>
+             </div>
     </BrowserRouter>
   );
 };

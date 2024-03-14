@@ -1,14 +1,11 @@
 import React, { useEffect, useRef } from "react";
 
-const RippleCanvas = () => {
+const RippleCanvas = ({ mousePosition }) => {
   const canvasRef = useRef(null);
   let circleCoord = [];
-  let stay = 0;
-  let dir = 1,
-    dirY = 1;
-  let auto = true;
-  let mX, mY;
   let frame = 0;
+  const rotateFrame = useRef(0); // rotateFrameをuseRefで定義
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,13 +18,20 @@ const RippleCanvas = () => {
       canvas.height = window.innerHeight;
     };
 
-    const handleMouseMove = (e) => {
-      stay = 0;
-      auto = false;
-      mX = e.pageX - canvas.offsetLeft;
-      mY = e.pageY - canvas.offsetTop;
-      circleCoord.push([mX, mY, frame]);
-    };
+// mousePositionの変更を監視し、変更があった場合に三角形の座標を更新
+if (mousePosition) {
+  const mX = mousePosition.x - canvas.offsetLeft;
+  const mY = mousePosition.y - canvas.offsetTop;
+  circleCoord.push([mX, mY, frame]);
+}
+
+    // const handleMouseMove = (e) => {
+    //   stay = 0;
+    //   auto = false;
+    //   mX = e.pageX - canvas.offsetLeft;
+    //   mY = e.pageY - canvas.offsetTop;
+    //   circleCoord.push([mX, mY, frame]);
+    // };
 
     const drawTriangle = (mx, my, size, opacity, rotationAngle) => {
       context.save();
@@ -48,14 +52,17 @@ const RippleCanvas = () => {
       context.restore();
     };
 
+
     const render = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
+      rotateFrame.current += 0.02; // rotateFrame.currentを0.05ずつインクリメント
+      const rotationAngle = (rotateFrame.current * Math.PI) / 180;
 
       if (circleCoord.length > 100) circleCoord.shift();
       circleCoord.forEach((coord) => {
         const base = frame - coord[2] + 15;
-        const rotationAngle = (frame * Math.PI) / 180;
+    
         drawTriangle(
           coord[0] + base,
           coord[1] + base / 2,
@@ -83,17 +90,17 @@ const RippleCanvas = () => {
     };
 
     window.addEventListener("resize", handleResize);
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("touchmove", handleMouseMove);
+    // canvas.addEventListener("mousemove", handleMouseMove);
+    // canvas.addEventListener("touchmove", handleMouseMove);
 
     render();
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("touchmove", handleMouseMove);
+      // canvas.removeEventListener("mousemove", handleMouseMove);
+      // canvas.removeEventListener("touchmove", handleMouseMove);
     };
-  }, []);
+  }, [mousePosition]);
 
   return (
     <canvas

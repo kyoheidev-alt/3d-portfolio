@@ -119,6 +119,15 @@
   transform: translateZ(0);
 }
 
+.description {
+  position: fixed; /* 画面に対して固定位置 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 中央に正確に配置 */
+  width: 50vw; /* 必要に応じて調整 */
+  /* その他のスタイル */
+}
+
 @keyframes mulShdSpin {
 
   0%,

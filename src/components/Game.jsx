@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion';
 
-const Contact = () => {
+const Game = () => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -9,9 +9,9 @@ const Contact = () => {
       exit={{ opacity: 0, y: 50 }}
       transition={{ duration: 0.5 }}
     >
-      <div>Contact</div>
+      <div>Game</div>
     </motion.div>
   );
 };
 
-export default Contact
+export default Game
