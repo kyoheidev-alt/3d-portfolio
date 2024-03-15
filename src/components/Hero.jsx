@@ -17,54 +17,53 @@ const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(null);
 
   useEffect(() => {
-    // クリックイベントリスナーを追加
     const handleDocumentClick = (event) => {
-      console.log(event.target);
-      // クリックされた要素がmenuクラスを持っているか、またはTetraCanvas内の要素かどうかをチェック
       if (
         !event.target.closest(".menu") &&
         !event.target.closest("#tetra-canvas")
       ) {
-        setActiveIndex(null); // 条件に一致しない場合はactiveIndexをnullに設定
+        setActiveIndex(null);
       }
     };
 
     document.addEventListener("click", handleDocumentClick);
 
-    // コンポーネントのアンマウント時にイベントリスナーを削除
     return () => {
       document.removeEventListener("click", handleDocumentClick);
     };
-  }, []); // 空の依存配列を渡して、コンポーネントのマウント時にのみ実行
+  }, []);
+
+  // 選択されたセクションのコンポーネントを取得
+  const ActiveComponent =
+    activeIndex !== null ? sections[activeIndex].Component : null;
 
   return (
-    <section
-      className={`relative w-full h-screen mx-auto `}
-      // onClick={handleClickOutside}
-    >
-      {sections.map(({ id, name, Component }) => (
+    <section className={`relative w-full h-screen mx-auto `}>
+      {sections.map(({ id, name }) => (
         <div
           key={id}
-          className={`absolute  ${
+          className={`absolute ${
             id % 2 === 0
               ? "lg:left-[20%] sm:left-[15%] left-[10%]"
               : "lg:right-[20%] sm:right-[15%] right-[10%]"
-          } ${id < 2 ? "top-[25%]" : "top-[70%]"} max-w-7xl mx-auto ${
+          } ${id < 2 ? "top-[25%]" : "top-[65%]"} max-w-7xl mx-auto ${
             styles.paddingX
-          } z-20 cursor-pointer`}
+          } z-20`}
           onClick={() => {
             setActiveIndex(id);
           }}
         >
           <a
-            className="menu text-xl font-bold"
-            style={{ color: activeIndex === id ? "red" : "inherit" }}
+            className={`menu text-xl font-bold cursor-pointer ${
+              activeIndex === id ? "active" : ""
+            }`}
           >
             {name}
           </a>
-          {activeIndex === id && <Component />}
         </div>
       ))}
+      {/* key={0}の位置に選択されたセクションのコンポーネントを表示 */}
+      {activeIndex !== null && <ActiveComponent />}
       <TetraCanvas activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
     </section>
   );
