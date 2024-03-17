@@ -15,14 +15,14 @@ import {
 } from "./components";
 
 const App = () => {
-   // マウスの位置を管理する状態
-   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  // マウスの位置を管理する状態
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-   // マウスの位置を更新する関数
-   const updateMousePosition = ev => {
-     setMousePosition({ x: ev.clientX, y: ev.clientY });
-   };
-    // コンポーネントがマウントされたときにイベントリスナーを追加し、アンマウントされたときに削除
+  // マウスの位置を更新する関数
+  const updateMousePosition = (ev) => {
+    setMousePosition({ x: ev.clientX, y: ev.clientY });
+  };
+  // コンポーネントがマウントされたときにイベントリスナーを追加し、アンマウントされたときに削除
   useEffect(() => {
     window.addEventListener("mousemove", updateMousePosition);
 
@@ -35,11 +35,11 @@ const App = () => {
       <div className="relative z-0 bg-primary">
         <div className="bg-cover bg-no-repeat bg-center">
           <Navbar />
-          <BackgroundCanvas />     
-         <RippleCanvas mousePosition={mousePosition} />
+          <BackgroundCanvas />
+          <RippleCanvas mousePosition={mousePosition} />
           <Hero />
         </div>
-             </div>
+      </div>
     </BrowserRouter>
   );
 };

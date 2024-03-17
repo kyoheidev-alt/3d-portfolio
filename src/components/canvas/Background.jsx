@@ -16,7 +16,7 @@ const BackgroundCanvas = () => {
 
     // アイテムを初期化する関数
     const initItems = () => {
-      let count = 70;
+      let count = 50;
       while (count--) {
         let radius = rand(1, 250);
         let blur = rand(12, 70);

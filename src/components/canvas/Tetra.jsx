@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber"; // useLoaderをインポート
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
+import { TextureLoader } from "three";
+import { logo, javascript, mobile } from "../../assets";
 
 const TetrahedronFace = ({
   vertices,
@@ -18,6 +20,8 @@ const TetrahedronFace = ({
   geometry.setIndex([0, 1, 2]); // 三角形を形成
   geometry.computeVertexNormals();
 
+  const texture = useLoader(TextureLoader, mobile);
+
   return (
     <mesh
       ref={ref}
@@ -33,13 +37,16 @@ const TetrahedronFace = ({
         setHoveredIndex(null); // ホバー終了時にnullを設定
       }}
       onClick={(e) => {
-        // e.stopPropagation(); // ここでイベントの伝播を止める
+        e.stopPropagation(); // ここでイベントの伝播を止める
         setActiveIndex(index); // setActiveIndexを呼び出す
       }}
     >
       <meshStandardMaterial
         side={THREE.DoubleSide}
         color={hovered ? "hotpink" : color}
+        map={index === 0 ? texture : null} // indexが0の場合のみテクスチャを適用
+        metalness={0.5}
+        roughness={0.5}
       />
     </mesh>
   );
@@ -164,16 +171,24 @@ const Tetrahedron = ({ setActiveIndex, activeIndex }) => {
 
 const TetraCanvas = ({ setActiveIndex, activeIndex }) => {
   return (
-    <Canvas
-      id="tetra-canvas"
-      className="z-10"
-      onPointerMissed={() => setActiveIndex(null)}
-    >
-      <ambientLight intensity={0.5} />
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-      <Tetrahedron setActiveIndex={setActiveIndex} activeIndex={activeIndex} />
-      <OrbitControls enableZoom={false} />
-    </Canvas>
+    <>
+      <Canvas
+        id="tetra-canvas"
+        className="z-10"
+        onPointerMissed={() => setActiveIndex(null)}
+      >
+        <ambientLight intensity={1} />
+        <spotLight position={[0, 1, 1]} angle={2} penumbra={2} />
+        <pointLight position={[0, 10, 0]} intensity={1} />
+        <directionalLight position={[-10, 10, 5]} intensity={0.5} />
+        <Tetrahedron
+          setActiveIndex={setActiveIndex}
+          activeIndex={activeIndex}
+        />
+        <OrbitControls enableZoom={false} />
+      </Canvas>
+      <img src={logo} alt="" />
+    </>
   );
 };
 export default TetraCanvas;
