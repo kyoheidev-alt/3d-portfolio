@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react"; // useEffectをインポート
 import About from "./About";
-import Work from "./Work";
-import Game from "./Game";
+import Works from "./Works";
+import Tech from "./Tech";
 import Contact from "./Contact";
 import { styles } from "../styles";
 import { TetraCanvas } from "./canvas";
 
 const sections = [
   { id: 0, name: "About", Component: About },
-  { id: 1, name: "Game", Component: Game },
-  { id: 2, name: "Work", Component: Work },
+  { id: 1, name: "Tech", Component: Tech },
+  { id: 2, name: "Works", Component: Works },
   { id: 3, name: "Contact", Component: Contact },
 ];
 

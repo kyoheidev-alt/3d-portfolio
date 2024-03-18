@@ -6,7 +6,6 @@ const RippleCanvas = ({ mousePosition }) => {
   let frame = 0;
   const rotateFrame = useRef(0); // rotateFrameをuseRefで定義
 
-
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
@@ -18,12 +17,12 @@ const RippleCanvas = ({ mousePosition }) => {
       canvas.height = window.innerHeight;
     };
 
-// mousePositionの変更を監視し、変更があった場合に三角形の座標を更新
-if (mousePosition) {
-  const mX = mousePosition.x - canvas.offsetLeft;
-  const mY = mousePosition.y - canvas.offsetTop;
-  circleCoord.push([mX, mY, frame]);
-}
+    // mousePositionの変更を監視し、変更があった場合に三角形の座標を更新
+    if (mousePosition) {
+      const mX = mousePosition.x - canvas.offsetLeft;
+      const mY = mousePosition.y - canvas.offsetTop;
+      circleCoord.push([mX, mY, frame]);
+    }
 
     // const handleMouseMove = (e) => {
     //   stay = 0;
@@ -45,13 +44,12 @@ if (mousePosition) {
       context.lineTo(size / 2, height / 2);
       context.closePath();
 
-      context.lineWidth = 3;
+      context.lineWidth = 6;
       context.strokeStyle = `rgba(100, 149, 237, ${opacity})`;
       context.stroke();
 
       context.restore();
     };
-
 
     const render = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -62,26 +60,26 @@ if (mousePosition) {
       if (circleCoord.length > 100) circleCoord.shift();
       circleCoord.forEach((coord) => {
         const base = frame - coord[2] + 15;
-    
+
         drawTriangle(
           coord[0] + base,
           coord[1] + base / 2,
           3 * base + base / 10,
-          1.3 / (base * 3),
+          1.3 / (base * 2),
           rotationAngle
         );
         drawTriangle(
           coord[0],
           coord[1],
           1.5 * base + base / 10,
-          2.3 / (base * 3),
+          2.3 / (base * 2),
           rotationAngle
         );
         drawTriangle(
           coord[0],
           coord[1],
           2 * base + base / 20,
-          2.5 / (base * 3),
+          2.5 / (base * 2),
           rotationAngle
         );
       });
