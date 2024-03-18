@@ -20,6 +20,13 @@ import redux from "./tech/redux.png";
 import tailwind from "./tech/tailwind.png";
 import typescript from "./tech/typescript.png";
 import threejs from "./tech/threejs.svg";
+import nextjs from "./tech/nextjs.svg";
+import sass from "./tech/sass.svg";
+import android from "./tech/android.svg";
+import kotlin from "./tech/kotlin.svg";
+import java from "./tech/java.svg";
+import php from "./tech/php.svg";
+import python from "./tech/python.svg";
 
 import meta from "./company/meta.png";
 import shopify from "./company/shopify.png";
@@ -31,6 +38,7 @@ import jobit from "./jobit.png";
 import tripguide from "./tripguide.png";
 
 import mitsuba from "./textures/mitsuba.png";
+import bowlingo from "./textures/bowlingo.png";
 
 export {
   logo,
@@ -61,5 +69,14 @@ export {
   carrent,
   jobit,
   tripguide,
-  mitsuba
+
+  nextjs,
+  sass,
+  android,
+  kotlin,
+  java,
+  php,
+  python,
+  mitsuba,
+  bowlingo,
 };

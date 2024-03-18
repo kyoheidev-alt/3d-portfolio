@@ -10,19 +10,18 @@ const Contact = () => {
       transition={{ duration: 0.5 }}
       className="description"
     >
-      <p>
-        I'm a 3D artist and a game developer. I create 3D models, textures, and
-        animations for games and other interactive media.
-      </p>
-      <p>
-        I'm also a game developer. I create games using Unity and Unreal Engine.
-        I also create interactive experiences using Three.js and other web-based
-        technologies.
-      </p>
-      <p>
-        I'm a 3D artist and a game developer. I create 3D models, textures, and
-        animations for games and other interactive media.
-      </p>
+      <div className="description-inner">
+        <p>
+          e-mail：
+          <a href="mailto:hsdkyh99@gmail.com">hsdkyh99@gmail.com</a>
+        </p>
+        <p>
+          GitHub：
+          <a href="https://github.com/KioheyHahsida">
+            https://github.com/KioheyHahsida
+          </a>
+        </p>
+      </div>
     </motion.div>
   );
 };

@@ -18,7 +18,7 @@ const BackgroundCanvas = () => {
     const initItems = () => {
       let count = 50;
       while (count--) {
-        let radius = rand(1, 250);
+        let radius = rand(1, 300);
         let blur = rand(12, 70);
         let x = rand(-100, canvas.width + 100);
         let y = rand(-100, canvas.height + 100);
@@ -29,7 +29,7 @@ const BackgroundCanvas = () => {
           ["#202bc5", "#873dcc"],
         ];
         let [colorOne, colorTwo] = colors[colorIndex];
-        let angle = rand(0, Math.PI * 2);
+        let angle = rand(0, Math.PI * 1);
         let angleVelocity = rand(-0.05, 0.02);
 
         items.push({

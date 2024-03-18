@@ -12,6 +12,9 @@
   scroll-behavior: smooth;
   color-scheme: dark;
 }
+a:hover{
+  color: palegoldenrod;
+}
 
 .hash-span {
   margin-top: -100px;
@@ -120,19 +123,59 @@
 }
 
 .description {
+  padding: 2em;
   width: 50%;
-  height: 30vh;
+  height: 32vh;
   position: absolute;
-  top: 32vh;
+  top: 30vh;
   left: 27%;
   z-index: 100;
-  overflow-y: scroll ;
+  border-radius: 10px
+}
+@media screen and (max-width: 768px) {
+  .description {
+    width: 80%;
+    left: 12%;
+  }
+  
+}
+.description-inner > p{
+  margin-bottom: 1em;
+} 
+@keyframes heightExpand {
+  from {
+    height: 0%;
+  }
+  to {
+    height: 100%;
+  }
+}
+.description-inner {
+  height: 100%;
+  overflow-y: scroll;
   scrollbar-width: thin;
   scrollbar-color: white transparent;
 }
-.description > *{
-  margin-bottom: 1em;
-} 
+.description::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(135, 185, 255, 0.1), rgba(135, 185, 255, 0.5));
+  z-index: -1;
+  border-radius: 10px;
+  animation: heightExpand 0.5s ease forwards;
+}
+.triangle-image img {
+  /* 画像を三角形に見せる */
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  /* 画像のサイズや位置を調整 */
+  width: 10em; /* 例として100pxに設定 */
+  height: auto;
+  display: block;
+}
 .active{
   color: orange;
   text-shadow: #FC0 1px 0 10px;
