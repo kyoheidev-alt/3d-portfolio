@@ -55,7 +55,9 @@ const TetrahedronFace = ({
 const Tetrahedron = ({ setActiveIndex, activeIndex }) => {
   const tetrahedronRef = useRef();
   const [hoveredIndex, setHoveredIndex] = useState(null);
+
   const [direction, setDirection] = useState(0); // directionをuseStateで管理
+  const texture = useLoader(TextureLoader, mobile); // mobile画像をテクスチャとして読み込む
   // 回転ロジックをuseFrame内で最適化
   useFrame(() => {
     // console.log(
@@ -165,6 +167,11 @@ const Tetrahedron = ({ setActiveIndex, activeIndex }) => {
           setHoveredIndex={setHoveredIndex}
         />
       ))}
+      {/* 新しいmeshを追加 */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial map={texture} />
+      </mesh>
     </group>
   );
 };
