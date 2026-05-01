@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { mitsuba, bowlingo } from "../assets";
 
@@ -15,8 +14,12 @@ const Works = () => {
         <p>
           <a className="flex items-center" href="https://mitsubayouchien.jp/">
             <div className="w-1/2">
-              <h5 className="text-lg">学校法人小林学園 三葉幼稚園HP</h5>
-              <p>https://mitsubayouchien.jp/</p>
+              <h5 className="font-display text-lg font-semibold tracking-tight">
+                学校法人小林学園 三葉幼稚園HP
+              </h5>
+              <p className="text-sm font-mono text-secondary/95 tracking-wide break-all mt-1">
+                https://mitsubayouchien.jp/
+              </p>
             </div>
             <div className="w-1/2 ml-5">
               <img className="rounded" src={mitsuba} alt="三葉幼稚園" />
@@ -24,10 +27,12 @@ const Works = () => {
           </a>
         </p>
         <p>
-          <a className="flex items-center" href="#">
+          <article className="flex items-center">
             <div className="w-1/2">
-              <h5 className="text-lg">ボウリングスコアビンゴ</h5>
-              <p></p>
+              <h5 className="font-display text-lg font-semibold tracking-tight">
+                ボウリングスコアビンゴ
+              </h5>
+              <p className="text-sm text-secondary">公開 URL 準備中</p>
             </div>
             <div className="w-1/2 ml-5">
               <img
@@ -36,7 +41,7 @@ const Works = () => {
                 alt="ボウリングスコアビンゴ"
               />
             </div>
-          </a>
+          </article>
         </p>
       </div>
     </motion.div>

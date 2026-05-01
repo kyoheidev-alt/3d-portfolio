@@ -1,36 +1,35 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-const RippleCanvas = ({ mousePosition }) => {
+const RippleCanvas = () => {
   const canvasRef = useRef(null);
-  let circleCoord = [];
-  let frame = 0;
-  const rotateFrame = useRef(0); // rotateFrameをuseRefで定義
+  const rotateFrameRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    if (!canvas) return;
 
-    const handleResize = () => {
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    const mouseRef = { x: 0, y: 0 };
+    let pendingPush = false;
+    const circleCoord = [];
+    let frame = 0;
+    let animationId = 0;
+
+    const syncSize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
+    syncSize();
 
-    // mousePositionの変更を監視し、変更があった場合に三角形の座標を更新
-    if (mousePosition) {
-      const mX = mousePosition.x - canvas.offsetLeft;
-      const mY = mousePosition.y - canvas.offsetTop;
-      circleCoord.push([mX, mY, frame]);
-    }
+    const onMove = (e) => {
+      mouseRef.x = e.clientX;
+      mouseRef.y = e.clientY;
+      pendingPush = true;
+    };
 
-    // const handleMouseMove = (e) => {
-    //   stay = 0;
-    //   auto = false;
-    //   mX = e.pageX - canvas.offsetLeft;
-    //   mY = e.pageY - canvas.offsetTop;
-    //   circleCoord.push([mX, mY, frame]);
-    // };
+    const handleResize = () => syncSize();
 
     const drawTriangle = (mx, my, size, opacity, rotationAngle) => {
       context.save();
@@ -54,8 +53,16 @@ const RippleCanvas = ({ mousePosition }) => {
     const render = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
-      rotateFrame.current += 0.02; // rotateFrame.currentを0.05ずつインクリメント
-      const rotationAngle = (rotateFrame.current * Math.PI) / 180;
+      rotateFrameRef.current += 0.02;
+      const rotationAngle =
+        (rotateFrameRef.current * Math.PI) / 180;
+
+      if (pendingPush) {
+        const mX = mouseRef.x - canvas.offsetLeft;
+        const mY = mouseRef.y - canvas.offsetTop;
+        circleCoord.push([mX, mY, frame]);
+        pendingPush = false;
+      }
 
       if (circleCoord.length > 100) circleCoord.shift();
       circleCoord.forEach((coord) => {
@@ -84,26 +91,25 @@ const RippleCanvas = ({ mousePosition }) => {
         );
       });
 
-      requestAnimationFrame(render);
+      animationId = requestAnimationFrame(render);
     };
 
     window.addEventListener("resize", handleResize);
-    // canvas.addEventListener("mousemove", handleMouseMove);
-    // canvas.addEventListener("touchmove", handleMouseMove);
-
-    render();
+    window.addEventListener("mousemove", onMove, { passive: true });
+    animationId = requestAnimationFrame(render);
 
     return () => {
+      cancelAnimationFrame(animationId);
       window.removeEventListener("resize", handleResize);
-      // canvas.removeEventListener("mousemove", handleMouseMove);
-      // canvas.removeEventListener("touchmove", handleMouseMove);
+      window.removeEventListener("mousemove", onMove);
     };
-  }, [mousePosition]);
+  }, []);
 
   return (
     <canvas
       ref={canvasRef}
       style={{ position: "absolute", left: 0, top: 0, zIndex: 1 }}
+      aria-hidden
     />
   );
 };

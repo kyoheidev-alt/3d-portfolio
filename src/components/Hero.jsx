@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // useEffectをインポート
+import { useEffect, useState } from "react";
 import About from "./About";
 import Works from "./Works";
 import Tech from "./Tech";
@@ -49,17 +49,16 @@ const Hero = () => {
           } ${id < 2 ? "top-[25%]" : "top-[65%]"} max-w-7xl mx-auto ${
             styles.paddingX
           } z-20`}
-          onClick={() => {
-            setActiveIndex(id);
-          }}
         >
-          <a
-            className={`menu text-xl font-bold cursor-pointer ${
+          <button
+            type="button"
+            className={`menu font-display text-xl font-semibold tracking-[0.12em] uppercase cursor-pointer select-none bg-transparent border-0 p-0 text-white rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500 focus-visible:outline-offset-2 ${
               activeIndex === id ? "active" : ""
             }`}
+            onClick={() => setActiveIndex(id)}
           >
             {name}
-          </a>
+          </button>
         </div>
       ))}
       {/* key={0}の位置に選択されたセクションのコンポーネントを表示 */}

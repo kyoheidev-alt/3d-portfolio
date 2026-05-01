@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 
 const Contact = () => {
@@ -11,14 +10,22 @@ const Contact = () => {
       className="description"
     >
       <div className="description-inner">
-        <p>
-          e-mail：
-          <a href="mailto:hsdkyh99@gmail.com">hsdkyh99@gmail.com</a>
+        <p className="leading-relaxed">
+          e-mail：{" "}
+          <a
+            href="mailto:kyohei.dev@gmail.com"
+            className="font-mono text-sm text-secondary"
+          >
+            kyohei.dev@gmail.com
+          </a>
         </p>
-        <p>
-          GitHub：
-          <a href="https://github.com/KioheyHahsida">
-            https://github.com/KioheyHahsida
+        <p className="leading-relaxed">
+          GitHub：{" "}
+          <a
+            href="https://github.com/kyoheidev-alt/"
+            className="font-mono text-sm text-secondary break-all"
+          >
+            https://github.com/kyoheidev-alt/
           </a>
         </p>
       </div>

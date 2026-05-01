@@ -1,5 +1,4 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const About = () => {
   return (
@@ -10,8 +9,10 @@ const About = () => {
       transition={{ duration: 0.5 }}
       className="description"
     >
-      <div className="description-inner text-lg">
-        <p>ハシダ　キョウヘイ</p>
+      <div className="description-inner text-base sm:text-lg leading-relaxed font-normal text-white/95">
+        <p className="font-display text-xl sm:text-2xl font-semibold tracking-tight text-white mb-1">
+          ハシダ キョウヘイ
+        </p>
         <p>高知県出身</p>
         <p>趣味：ギター、歌唱、映画鑑賞、作曲、動画作成</p>
         <p>好きな映画：少林サッカー、カンフーハッスル、ゴジラ</p>

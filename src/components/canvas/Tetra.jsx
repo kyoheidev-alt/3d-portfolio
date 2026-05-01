@@ -1,17 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber"; // useLoaderをインポート
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { TextureLoader } from "three";
 import { logo, javascript, mitsuba, mobile } from "../../assets";
 
-const TetrahedronFace = ({
-  vertices,
-  color,
-  index,
-  setActiveIndex,
-  setHoveredIndex,
-}) => {
+const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
   const ref = useRef();
   const [hovered, setHovered] = useState(false);
   const points = vertices.map((vertex) => new THREE.Vector3(...vertex));
@@ -59,7 +53,6 @@ const TetrahedronFace = ({
     texture.offset.set(0.85, 1);
     // テクスチャの繰り返しを設定して横に引き伸ばす
     texture.repeat.set(0.7, 1); // X軸に沿って2倍、Y軸に沿って変更なし
-  } else if (index === 1) {
   } else if (index === 2) {
     texture.rotation = Math.PI / 1; // ラジアンで指定
     texture.offset.set(1, 1);
@@ -97,7 +90,7 @@ const TetrahedronFace = ({
   );
 };
 
-const Tetrahedron = ({ setActiveIndex, activeIndex }) => {
+const Tetrahedron = ({ setActiveIndex, activeIndex, reduceMotion }) => {
   const tetrahedronRef = useRef();
   const [direction, setDirection] = useState(0); // directionをuseStateで管理
 
@@ -145,9 +138,12 @@ const Tetrahedron = ({ setActiveIndex, activeIndex }) => {
         "XYZ" // 回転の順序
       );
       const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
-      // slerpを使用して現在のクォータニオンから目標のクォータニオンへと補間する
-      tetrahedronRef.current.quaternion.slerp(targetQuaternion, 0.05);
+      const t = reduceMotion ? 0.2 : 0.05;
+      tetrahedronRef.current.quaternion.slerp(targetQuaternion, t);
     } else {
+      if (reduceMotion) {
+        return;
+      }
       // activeIndexが設定されていない場合、directionに基づいて回転方向を変更
       if (tetrahedronRef.current.rotation.x > 15) {
         setDirection(1);
@@ -210,6 +206,19 @@ const Tetrahedron = ({ setActiveIndex, activeIndex }) => {
 
 const TetraCanvas = ({ setActiveIndex, activeIndex }) => {
   const orbitRef = useRef();
+  const [reduceMotion, setReduceMotion] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setReduceMotion(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   useEffect(() => {
     if (orbitRef.current) {
       // カメラの位置と視点をリセットする
@@ -228,14 +237,24 @@ const TetraCanvas = ({ setActiveIndex, activeIndex }) => {
     <Canvas
       id="tetra-canvas"
       className="z-10"
+      role="img"
+      aria-label="セクション切替用の 3D 四面体。ドラッグで回転します。"
       onPointerMissed={() => setActiveIndex(null)}
     >
       <ambientLight intensity={1} />
       <spotLight position={[0, 1, 1]} angle={2} penumbra={2} />
       <pointLight position={[0, 10, 0]} intensity={1} />
       <directionalLight position={[-10, 10, 5]} intensity={0.5} />
-      <Tetrahedron setActiveIndex={setActiveIndex} activeIndex={activeIndex} />
-      <OrbitControls ref={orbitRef} enableZoom={false} />
+      <Tetrahedron
+        setActiveIndex={setActiveIndex}
+        activeIndex={activeIndex}
+        reduceMotion={reduceMotion}
+      />
+      <OrbitControls
+        ref={orbitRef}
+        enableZoom={false}
+        enableRotate={!reduceMotion}
+      />
     </Canvas>
   );
 };

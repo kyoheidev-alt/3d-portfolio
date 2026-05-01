@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,12 +6,25 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+}
+
+html {
   scroll-behavior: smooth;
   color-scheme: dark;
 }
-a:hover{
+
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+}
+.description-inner a:hover {
   color: palegoldenrod;
+}
+
+.menu:focus-visible {
+  outline: 2px solid #ffa500;
+  outline-offset: 3px;
 }
 
 .hash-span {
@@ -152,7 +163,8 @@ a:hover{
 }
 .description-inner {
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: white transparent;
 }
