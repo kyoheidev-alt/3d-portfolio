@@ -167,6 +167,11 @@ html {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: white transparent;
+  color: #f3f3f3;
+}
+.description-inner a {
+  color: inherit;
+  text-decoration: none;
 }
 .description::after {
   content: "";

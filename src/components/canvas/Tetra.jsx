@@ -3,7 +3,7 @@ import { Canvas, useFrame, useLoader } from "@react-three/fiber"; // useLoader�
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { TextureLoader } from "three";
-import { logo, javascript, mitsuba, mobile } from "../../assets";
+import { logoFace, javascript, mitsuba, mobile } from "../../assets";
 
 const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
   const ref = useRef();
@@ -28,7 +28,7 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
   let texturePath;
   switch (index) {
     case 0:
-      texturePath = logo;
+      texturePath = logoFace;
       break;
     case 1:
       texturePath = javascript;
@@ -45,22 +45,22 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
 
   const texture = useLoader(TextureLoader, texturePath);
 
-  if (index === 0) {
-    // テクスチャの回転を設定（例: 45度回転）
-    texture.rotation = Math.PI / 1; // ラジアンで指定
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
 
-    // テクスチャのオフセットやリピートなど、他のプロパティもここで設定可能
-    texture.offset.set(0.85, 1);
-    // テクスチャの繰り返しを設定して横に引き伸ばす
-    texture.repeat.set(0.7, 1); // X軸に沿って2倍、Y軸に沿って変更なし
+  if (index === 0) {
+    // 「K」ロゴが面の中央に収まるようクロップ（offset Y=1 だとテクスチャが画面外になり真っ黒になる）
+    texture.center.set(0.5, 0.5);
+    texture.rotation = 0;
+    texture.offset.set(0.32, 0.08);
+    texture.repeat.set(0.42, 0.55);
   } else if (index === 2) {
-    texture.rotation = Math.PI / 1; // ラジアンで指定
-    texture.offset.set(1, 1);
-    texture.repeat.set(1, 1); // X軸に沿って2倍、Y軸に沿って変更なし
+    texture.center.set(0.5, 0.5);
+    texture.rotation = 0;
+    texture.offset.set(0, 0);
+    texture.repeat.set(1, 1);
   }
-  // テクスチャが繰り返されるようにするためには、このプロパティも設定する必要があります
-  // texture.wrapS = THREE.RepeatWrapping;
-  // texture.wrapT = THREE.RepeatWrapping;
 
   return (
     <mesh
@@ -79,12 +79,11 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
         setActiveIndex(index); // setActiveIndexを呼び出す
       }}
     >
-      <meshStandardMaterial
+      <meshBasicMaterial
         side={THREE.DoubleSide}
-        color={hovered ? "pink" : color}
+        color={hovered ? "#ffb6c1" : color}
         map={texture}
-        metalness={0.5}
-        roughness={0.5}
+        toneMapped={false}
       />
     </mesh>
   );

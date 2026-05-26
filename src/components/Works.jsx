@@ -19,7 +19,7 @@ const Works = () => {
               <h5 className="font-display text-lg font-semibold tracking-tight">
                 学校法人小林学園 三葉幼稚園HP
               </h5>
-              <p className="text-sm font-mono text-secondary/95 tracking-wide break-all mt-1">
+              <p className="text-sm font-mono text-white/90 tracking-wide break-all mt-1">
                 https://mitsubayouchien.jp/
               </p>
             </div>
@@ -34,11 +34,11 @@ const Works = () => {
               <h5 className="font-display text-lg font-semibold tracking-tight">
                 匿名ディベート参加型チャット
               </h5>
-              <p className="text-sm text-secondary/95 leading-relaxed mt-1">
+              <p className="text-sm text-white leading-relaxed mt-1">
                 教育機関での利用を想定し、議長と学生がリアルタイムでディベート議論できるWebアプリ。Supabase
                 Realtimeによるチャット、RLSによるアクセス制御、賛否バロメーター、重要意見・返信スレッド、運用向け管理画面を個人で設計・実装。
               </p>
-              <p className="text-sm font-mono text-secondary/95 tracking-wide break-all mt-1">
+              <p className="text-sm font-mono text-white/90 tracking-wide break-all mt-1">
                 {DEBATE_APP_URL}
               </p>
             </div>

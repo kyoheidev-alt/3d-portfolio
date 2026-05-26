@@ -22,6 +22,7 @@ import python from "./tech/python.svg";
 
 import mitsuba from "./textures/mitsuba.png";
 import debateChat from "./textures/debate-chat.png";
+import logoFace from "./textures/logo-face.png";
 
 export {
   logo,
@@ -46,4 +47,5 @@ export {
   python,
   mitsuba,
   debateChat,
+  logoFace,
 };
