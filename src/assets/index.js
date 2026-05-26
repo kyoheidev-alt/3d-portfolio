@@ -21,7 +21,7 @@ import php from "./tech/php.svg";
 import python from "./tech/python.svg";
 
 import mitsuba from "./textures/mitsuba.png";
-import bowlingo from "./textures/bowlingo.png";
+import debateChat from "./textures/debate-chat.png";
 
 export {
   logo,
@@ -45,5 +45,5 @@ export {
   php,
   python,
   mitsuba,
-  bowlingo,
+  debateChat,
 };

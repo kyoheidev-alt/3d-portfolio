@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
-import { mitsuba, bowlingo } from "../assets";
+import { mitsuba, debateChat } from "../assets";
+
+const DEBATE_APP_URL = "https://debate-app-pi.vercel.app/";
 
 const Works = () => {
   return (
@@ -27,21 +29,27 @@ const Works = () => {
           </a>
         </p>
         <p>
-          <article className="flex items-center">
+          <a className="flex items-center" href={DEBATE_APP_URL}>
             <div className="w-1/2">
               <h5 className="font-display text-lg font-semibold tracking-tight">
-                ボウリングスコアビンゴ
+                匿名ディベート参加型チャット
               </h5>
-              <p className="text-sm text-secondary">公開 URL 準備中</p>
+              <p className="text-sm text-secondary/95 leading-relaxed mt-1">
+                教育機関での利用を想定し、議長と学生がリアルタイムでディベート議論できるWebアプリ。Supabase
+                Realtimeによるチャット、RLSによるアクセス制御、賛否バロメーター、重要意見・返信スレッド、運用向け管理画面を個人で設計・実装。
+              </p>
+              <p className="text-sm font-mono text-secondary/95 tracking-wide break-all mt-1">
+                {DEBATE_APP_URL}
+              </p>
             </div>
             <div className="w-1/2 ml-5">
               <img
                 className="rounded"
-                src={bowlingo}
-                alt="ボウリングスコアビンゴ"
+                src={debateChat}
+                alt="匿名ディベート参加型チャット"
               />
             </div>
-          </article>
+          </a>
         </p>
       </div>
     </motion.div>

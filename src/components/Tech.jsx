@@ -30,6 +30,11 @@ const Tech = () => {
       className="description"
     >
       <div className="description-inner">
+        <p className="text-sm sm:text-base text-secondary/95 leading-relaxed mb-4">
+          フロント（React / Next.js / TypeScript）からバックエンド（Supabase /
+          PostgreSQL）、デプロイ（Vercel）まで一貫対応。kintone・WordPress・Android（Java
+          / Kotlin）・Python・PHP など幅広い領域の実務経験あり。
+        </p>
         <div className="grid grid-rows-4 grid-flow-col gap-4">
           <img src={html} alt="HTML" className="w-16 h-16 object-contain" />
           <img src={css} alt="CSS" className="w-16 h-16 object-contain" />
