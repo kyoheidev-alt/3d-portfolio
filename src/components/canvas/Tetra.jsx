@@ -3,7 +3,23 @@ import { Canvas, useFrame, useLoader } from "@react-three/fiber"; // useLoader�
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { TextureLoader } from "three";
-import { logoFace, javascript, mitsuba, mobile } from "../../assets";
+import { logoK, javascript, mitsuba, mobile } from "../../assets";
+
+const configureTexture = (texture, index) => {
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.flipY = true;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.center.set(0.5, 0.5);
+  texture.rotation = 0;
+  texture.offset.set(0, 0);
+  texture.repeat.set(1, 1);
+  texture.needsUpdate = true;
+
+  if (index === 2) {
+    texture.rotation = Math.PI;
+  }
+};
 
 const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
   const ref = useRef();
@@ -28,7 +44,7 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
   let texturePath;
   switch (index) {
     case 0:
-      texturePath = logoFace;
+      texturePath = logoK;
       break;
     case 1:
       texturePath = javascript;
@@ -44,23 +60,10 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
   }
 
   const texture = useLoader(TextureLoader, texturePath);
+  configureTexture(texture, index);
 
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.ClampToEdgeWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-
-  if (index === 0) {
-    // 「K」ロゴが面の中央に収まるようクロップ（offset Y=1 だとテクスチャが画面外になり真っ黒になる）
-    texture.center.set(0.5, 0.5);
-    texture.rotation = 0;
-    texture.offset.set(0.32, 0.08);
-    texture.repeat.set(0.42, 0.55);
-  } else if (index === 2) {
-    texture.center.set(0.5, 0.5);
-    texture.rotation = 0;
-    texture.offset.set(0, 0);
-    texture.repeat.set(1, 1);
-  }
+  const faceColor =
+    index === 0 ? "#ffffff" : hovered ? "#ffb6c1" : color;
 
   return (
     <mesh
@@ -81,7 +84,7 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
     >
       <meshBasicMaterial
         side={THREE.DoubleSide}
-        color={hovered ? "#ffb6c1" : color}
+        color={faceColor}
         map={texture}
         toneMapped={false}
       />

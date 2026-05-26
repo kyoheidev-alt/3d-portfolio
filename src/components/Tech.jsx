@@ -30,7 +30,7 @@ const Tech = () => {
       className="description"
     >
       <div className="description-inner">
-        <p className="text-sm sm:text-base text-secondary/95 leading-relaxed mb-4">
+        <p className="text-sm sm:text-base text-white leading-relaxed mb-4">
           フロント（React / Next.js / TypeScript）からバックエンド（Supabase /
           PostgreSQL）、デプロイ（Vercel）まで一貫対応。kintone・WordPress・Android（Java
           / Kotlin）・Python・PHP など幅広い領域の実務経験あり。
