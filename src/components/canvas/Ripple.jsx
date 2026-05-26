@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 
+const MAX_RIPPLES = 48;
+
 const RippleCanvas = () => {
   const canvasRef = useRef(null);
   const rotateFrameRef = useRef(0);
@@ -16,22 +18,35 @@ const RippleCanvas = () => {
     const circleCoord = [];
     let frame = 0;
     let animationId = 0;
+    let running = true;
 
     const syncSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     syncSize();
+
+    const scheduleFrame = () => {
+      if (!running || animationId) return;
+      animationId = requestAnimationFrame(render);
+    };
 
     const onMove = (e) => {
       mouseRef.x = e.clientX;
       mouseRef.y = e.clientY;
       pendingPush = true;
+      scheduleFrame();
     };
 
     const handleResize = () => syncSize();
 
     const drawTriangle = (mx, my, size, opacity, rotationAngle) => {
+      if (opacity <= 0 || size <= 0) return;
+
       context.save();
       context.translate(mx, my);
       context.rotate(rotationAngle);
@@ -43,19 +58,25 @@ const RippleCanvas = () => {
       context.lineTo(size / 2, height / 2);
       context.closePath();
 
-      context.lineWidth = 6;
+      context.lineWidth = 5;
       context.strokeStyle = `rgba(100, 149, 237, ${opacity})`;
       context.stroke();
-
       context.restore();
     };
 
     const render = () => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      animationId = 0;
+      if (!running) return;
+
+      if (document.hidden) {
+        scheduleFrame();
+        return;
+      }
+
+      context.clearRect(0, 0, window.innerWidth, window.innerHeight);
       frame++;
       rotateFrameRef.current += 0.02;
-      const rotationAngle =
-        (rotateFrameRef.current * Math.PI) / 180;
+      const rotationAngle = (rotateFrameRef.current * Math.PI) / 180;
 
       if (pendingPush) {
         const mX = mouseRef.x - canvas.offsetLeft;
@@ -64,8 +85,17 @@ const RippleCanvas = () => {
         pendingPush = false;
       }
 
-      if (circleCoord.length > 100) circleCoord.shift();
-      circleCoord.forEach((coord) => {
+      while (circleCoord.length > 0 && frame - circleCoord[0][2] > 90) {
+        circleCoord.shift();
+      }
+      while (circleCoord.length > MAX_RIPPLES) circleCoord.shift();
+
+      const activeRipples = circleCoord;
+      if (activeRipples.length === 0) {
+        return;
+      }
+
+      activeRipples.forEach((coord) => {
         const base = frame - coord[2] + 15;
 
         drawTriangle(
@@ -91,14 +121,14 @@ const RippleCanvas = () => {
         );
       });
 
-      animationId = requestAnimationFrame(render);
+      scheduleFrame();
     };
 
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", onMove, { passive: true });
-    animationId = requestAnimationFrame(render);
 
     return () => {
+      running = false;
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", onMove);

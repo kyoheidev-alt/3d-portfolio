@@ -1,9 +1,54 @@
-import { useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber"; // useLoaderをインポート
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { TextureLoader } from "three";
 import { logoK, javascript, mitsuba, mobile } from "../../assets";
+
+const SCALE = 1.3;
+const SCALED_SQRT2 = (1 / Math.sqrt(2)) * SCALE;
+
+const TETRA_FACES = [
+  [
+    [1 * SCALE, 0, -SCALED_SQRT2],
+    [-1 * SCALE, 0, -SCALED_SQRT2],
+    [0, 1 * SCALE, SCALED_SQRT2],
+  ],
+  [
+    [1 * SCALE, 0, -SCALED_SQRT2],
+    [0, -1 * SCALE, SCALED_SQRT2],
+    [-1 * SCALE, 0, -SCALED_SQRT2],
+  ],
+  [
+    [-1 * SCALE, 0, -SCALED_SQRT2],
+    [0, 1 * SCALE, SCALED_SQRT2],
+    [0, -1 * SCALE, SCALED_SQRT2],
+  ],
+  [
+    [1 * SCALE, 0, -SCALED_SQRT2],
+    [0, 1 * SCALE, SCALED_SQRT2],
+    [0, -1 * SCALE, SCALED_SQRT2],
+  ],
+];
+
+const FACE_TEXTURES = [logoK, javascript, mitsuba, mobile];
+
+const createFaceGeometry = (vertices) => {
+  const points = vertices.map((vertex) => new THREE.Vector3(...vertex));
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  geometry.setIndex([0, 1, 2]);
+  geometry.computeVertexNormals();
+  geometry.setAttribute(
+    "uv",
+    new THREE.BufferAttribute(
+      new Float32Array([0, 0, 1, 0, 0.5, 1]),
+      2
+    )
+  );
+  return geometry;
+};
+
+const FACE_GEOMETRIES = TETRA_FACES.map(createFaceGeometry);
 
 const configureTexture = (texture, index) => {
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -11,55 +56,15 @@ const configureTexture = (texture, index) => {
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
   texture.center.set(0.5, 0.5);
-  texture.rotation = 0;
+  texture.rotation = index === 2 ? Math.PI : 0;
   texture.offset.set(0, 0);
   texture.repeat.set(1, 1);
   texture.needsUpdate = true;
-
-  if (index === 2) {
-    texture.rotation = Math.PI;
-  }
 };
 
-const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
-  const ref = useRef();
+const TetrahedronFace = ({ color, index, setActiveIndex }) => {
   const [hovered, setHovered] = useState(false);
-  const points = vertices.map((vertex) => new THREE.Vector3(...vertex));
-
-  const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  geometry.setIndex([0, 1, 2]); // 三角形を形成
-  geometry.computeVertexNormals();
-
-  // UV座標の追加
-  const uvs = new Float32Array([
-    0.0,
-    0.0, // 頂点1のUV座標
-    1.0,
-    0.0, // 頂点2のUV座標
-    0.5,
-    1.0, // 頂点3のUV座標
-  ]);
-  geometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
-
-  let texturePath;
-  switch (index) {
-    case 0:
-      texturePath = logoK;
-      break;
-    case 1:
-      texturePath = javascript;
-      break;
-    case 2:
-      texturePath = mitsuba;
-      break;
-    case 3:
-      texturePath = mobile;
-      break;
-    default:
-      texturePath = javascript; // デフォルトのテクスチャ
-  }
-
-  const texture = useLoader(TextureLoader, texturePath);
+  const texture = useLoader(TextureLoader, FACE_TEXTURES[index]);
   configureTexture(texture, index);
 
   const faceColor =
@@ -67,8 +72,7 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
 
   return (
     <mesh
-      ref={ref}
-      geometry={geometry}
+      geometry={FACE_GEOMETRIES[index]}
       onPointerOver={(e) => {
         e.stopPropagation();
         setHovered(true);
@@ -78,8 +82,8 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
         setHovered(false);
       }}
       onClick={(e) => {
-        e.stopPropagation(); // ここでイベントの伝播を止める
-        setActiveIndex(index); // setActiveIndexを呼び出す
+        e.stopPropagation();
+        setActiveIndex(index);
       }}
     >
       <meshBasicMaterial
@@ -94,109 +98,65 @@ const TetrahedronFace = ({ vertices, color, index, setActiveIndex }) => {
 
 const Tetrahedron = ({ setActiveIndex, activeIndex, reduceMotion }) => {
   const tetrahedronRef = useRef();
-  const [direction, setDirection] = useState(0); // directionをuseStateで管理
+  const [direction, setDirection] = useState(0);
+  const frameRef = useRef(0);
 
-  // 回転ロジックをuseFrame内で最適化
   useFrame(() => {
-    // console.log(
-    //   "x: ",
-    //   tetrahedronRef.current.rotation.x,
-    //   "y: ",
-    //   tetrahedronRef.current.rotation.y,
-    //   "z: ",
-    //   tetrahedronRef.current.rotation.z
-    // );
     if (!tetrahedronRef.current) return;
 
-    // activeIndexに基づいて回転目標を設定
-    let targetX = 0.01,
-      targetY = 0.01,
-      targetZ = 0; // デフォルトの回転
+    frameRef.current += 1;
+    const isIdle = activeIndex == null;
+    if (isIdle && !reduceMotion && frameRef.current % 2 !== 0) {
+      return;
+    }
+
+    let targetX = 0.01;
+    let targetY = 0.01;
+    const targetZ = 0;
+
     if (activeIndex === 0) {
       targetX = 100;
       targetY = 0;
-      targetZ = 0;
     } else if (activeIndex === 1) {
       targetX = -80;
       targetY = 110;
-      targetZ = 0;
     } else if (activeIndex === 2) {
-      targetX = 0;
       targetY = 50;
-      targetZ = 0;
     } else if (activeIndex === 3) {
-      targetX = 0;
       targetY = -50;
-      targetZ = 0;
     }
 
-    // activeIndexが設定されている場合、目標の回転値に近づける
-    if (activeIndex != null) {
-      // 目標の回転をラジアンで設定
+    if (!isIdle) {
       const targetEuler = new THREE.Euler(
-        THREE.MathUtils.degToRad(targetX), // X軸の回転目標をラジアンに変換
-        THREE.MathUtils.degToRad(targetY), // Y軸の回転目標をラジアンに変換
-        THREE.MathUtils.degToRad(targetZ), // Z軸の回転目標をラジアンに変換
-        "XYZ" // 回転の順序
+        THREE.MathUtils.degToRad(targetX),
+        THREE.MathUtils.degToRad(targetY),
+        THREE.MathUtils.degToRad(targetZ),
+        "XYZ"
       );
       const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
       const t = reduceMotion ? 0.2 : 0.05;
       tetrahedronRef.current.quaternion.slerp(targetQuaternion, t);
-    } else {
-      if (reduceMotion) {
-        return;
-      }
-      // activeIndexが設定されていない場合、directionに基づいて回転方向を変更
-      if (tetrahedronRef.current.rotation.x > 15) {
-        setDirection(1);
-      } else if (tetrahedronRef.current.rotation.x < 0) {
-        setDirection(0);
-      }
-      if (direction === 0) {
-        tetrahedronRef.current.rotation.x += targetX;
-        tetrahedronRef.current.rotation.y += targetY;
-        tetrahedronRef.current.rotation.z += targetZ;
-      } else {
-        tetrahedronRef.current.rotation.x -= targetX;
-        tetrahedronRef.current.rotation.y -= targetY;
-        tetrahedronRef.current.rotation.z -= targetZ;
-      }
+      return;
     }
+
+    if (reduceMotion) return;
+
+    if (tetrahedronRef.current.rotation.x > 15) {
+      setDirection(1);
+    } else if (tetrahedronRef.current.rotation.x < 0) {
+      setDirection(0);
+    }
+
+    const sign = direction === 0 ? 1 : -1;
+    tetrahedronRef.current.rotation.x += targetX * sign;
+    tetrahedronRef.current.rotation.y += targetY * sign;
   });
-
-  const scale = 1.3;
-  const scaledSqrt2 = (1 / Math.sqrt(2)) * scale;
-
-  // verticesの定義を最適化
-  const vertices = [
-    [
-      [1 * scale, 0, -scaledSqrt2],
-      [-1 * scale, 0, -scaledSqrt2],
-      [0, 1 * scale, scaledSqrt2],
-    ],
-    [
-      [1 * scale, 0, -scaledSqrt2],
-      [0, -1 * scale, scaledSqrt2],
-      [-1 * scale, 0, -scaledSqrt2],
-    ],
-    [
-      [-1 * scale, 0, -scaledSqrt2],
-      [0, 1 * scale, scaledSqrt2],
-      [0, -1 * scale, scaledSqrt2],
-    ],
-    [
-      [1 * scale, 0, -scaledSqrt2],
-      [0, 1 * scale, scaledSqrt2],
-      [0, -1 * scale, scaledSqrt2],
-    ],
-  ];
 
   return (
     <group ref={tetrahedronRef}>
-      {vertices.map((faceVertices, index) => (
+      {TETRA_FACES.map((_, index) => (
         <TetrahedronFace
           key={index}
-          vertices={faceVertices}
           color={index === activeIndex ? "white" : "skyblue"}
           index={index}
           setActiveIndex={setActiveIndex}
@@ -214,6 +174,14 @@ const TetraCanvas = ({ setActiveIndex, activeIndex }) => {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
+  const dpr = useMemo(
+    () =>
+      typeof window !== "undefined"
+        ? Math.min(window.devicePixelRatio || 1, 1.5)
+        : 1,
+    []
+  );
+
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onChange = () => setReduceMotion(mq.matches);
@@ -222,31 +190,23 @@ const TetraCanvas = ({ setActiveIndex, activeIndex }) => {
   }, []);
 
   useEffect(() => {
-    if (orbitRef.current) {
-      // カメラの位置と視点をリセットする
-      const controls = orbitRef.current;
-      controls.reset(); // OrbitControlsのresetメソッドを呼び出す
-
-      // // カメラの位置を設定
-      // controls.object.position.set(3, 3, 5); // x, y, z 座標にカメラを移動
-      // // カメラの視点を設定
-      // controls.target.set(0, 0, 0); // x, y, z 座標にカメラの視点を設定
-
-      // controls.update(); // OrbitControlsを更新して変更を適用
-    }
+    orbitRef.current?.reset();
   }, [activeIndex]);
+
   return (
     <Canvas
       id="tetra-canvas"
       className="z-10"
+      dpr={dpr}
+      gl={{
+        antialias: false,
+        powerPreference: "high-performance",
+        alpha: true,
+      }}
       role="img"
       aria-label="セクション切替用の 3D 四面体。ドラッグで回転します。"
       onPointerMissed={() => setActiveIndex(null)}
     >
-      <ambientLight intensity={1} />
-      <spotLight position={[0, 1, 1]} angle={2} penumbra={2} />
-      <pointLight position={[0, 10, 0]} intensity={1} />
-      <directionalLight position={[-10, 10, 5]} intensity={0.5} />
       <Tetrahedron
         setActiveIndex={setActiveIndex}
         activeIndex={activeIndex}
@@ -260,4 +220,5 @@ const TetraCanvas = ({ setActiveIndex, activeIndex }) => {
     </Canvas>
   );
 };
+
 export default TetraCanvas;
